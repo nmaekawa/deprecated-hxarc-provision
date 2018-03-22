@@ -14,14 +14,21 @@ webservice_rootdir: "/opt/{{ webservice_name }}"
 webservice_venv: "{{ webservice_rootdir }}/venv"
 webservice_log_path: "{{ webservice_rootdir }}/log"
 webservice_source_path: "{{ webservice_rootdir }}/{{ webservice_name }}"
+webservice_config_path: "{{ webservice_rootdir }}/conf"
+webservice_config_filename: "{{ webservice_name }}.env"
 webservice_git_repo: "https://github.com/nmaekawa/hxarc.git"
 webservice_git_version: "master"
+
+webservice_dirs_to_create:
+    - "{{ webservice_rootdir }}"
+    - "{{ webservice_log_path }}"
+    - "{{ webservice_config_path }}"
 
 
 # utility script vars
 utilservice_name: "hxpy"
-utilservice_user: "{{ utilservice_name }}"
-utilservice_group: "{{ utilservice_name }}"
+utilservice_user: "{{ webservice_name }}"  # use same as web
+utilservice_group: "{{ webservice_name }}"  # use same as web
 utilservice_rootdir: "/opt/{{ utilservice_name }}"
 utilservice_venv: "{{ utilservice_rootdir }}/venv"
 utilservice_source_path: "{{ utilservice_rootdir }}/{{ utilservice_name }}"
