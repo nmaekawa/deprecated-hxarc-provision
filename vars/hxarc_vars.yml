@@ -1,0 +1,57 @@
+---
+
+# assumes either aws or vagrant, then derive remote_user(assumes ubuntu)
+use_aws: "{{ (ec2_tag_cluster == 'vagrant') | ternary(False, True) }}"
+my_remote_user: "{{ use_aws | ternary('ubuntu', 'vagrant') }}"
+
+
+
+# webservice vars
+webservice_name: "hxarc"
+webservice_user: "{{ webservice_name }}"
+webservice_group: "{{ webservice_name }}"
+webservice_rootdir: "/opt/{{ webservice_name }}"
+webservice_venv: "{{ webservice_rootdir }}/venv"
+webservice_log_path: "{{ webservice_rootdir }}/log"
+webservice_source_path: "{{ webservice_rootdir }}/{{ webservice_name }}"
+webservice_git_repo: "https://github.com/nmaekawa/hxarc.git"
+webservice_git_version: "master"
+
+
+# utility script vars
+utilservice_name: "hxpy"
+utilservice_user: "{{ utilservice_name }}"
+utilservice_group: "{{ utilservice_name }}"
+utilservice_rootdir: "/opt/{{ utilservice_name }}"
+utilservice_venv: "{{ utilservice_rootdir }}/venv"
+utilservice_source_path: "{{ utilservice_rootdir }}/{{ utilservice_name }}"
+
+
+
+# for nmaekawa.apt
+apt_required_packages_hxarc:
+    - 'python-pip'
+    - 'python-dev'
+    - 'python-setuptools'
+    - 'nginx'
+    - 'supervisor'
+
+
+# for Stouts.users
+users_enabled: yes
+
+users_users:
+    - name: '{{ webservice_user }}'
+      authorized: []
+
+    - name: '{{ utilservice_user }}'
+      authorized: []
+
+
+
+users_ssh_keys: '{{ users_users }}'
+
+users_to_install:
+    - '{{ webservice_user }}'
+    - '{{ utilservice_user }}'
+

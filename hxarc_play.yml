@@ -1,0 +1,84 @@
+---
+- hosts: tag_hxarc
+  remote_user: "{{ my_remote_user }}"
+  become: yes
+  become_user: root
+  gather_facts: False
+  vars_files:
+      - vars/hxarc_vars.yml
+
+  tasks:
+      - name: install python2
+        raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+        register: result
+        changed_when: "result.stdout != ''"
+
+
+- hosts: tag_hxarc
+  remote_user: "{{ my_remote_user }}"
+  become: yes
+  become_user: root
+  vars_files:
+      - vars/hxarc_vars.yml
+
+  roles:
+      - external/jmcvetta.passwordless_sudo
+      - { role: external/nmaekawa.apt, apt_other_packages: "{{ apt_required_packages_hxarc }}" }
+      - external/Stouts.users
+
+
+- hosts: tag_hxarc
+  remote_user: "{{ my_remote_user }}"
+  become: yes
+  vars_files:
+      - vars/hxarc_vars.yml
+
+  tasks:
+      - name: ensure service dirs are present
+        file:
+            path: "{{ item }}"
+            owner: "{{ webservice_user }}"
+            group: "{{ webservice_group }}"
+            mode: 0755
+            state: directory
+        with_items:
+            - "{{ webservice_rootdir }}"
+            - "{{ webservice_log_path }}"
+
+      - name: clone repository
+        become_user: '{{ webservice_user }}'
+        git:
+            repo: '{{ webservice_git_repo }}'
+            update: yes
+            clone: yes
+            force: yes
+            version: '{{ webservice_git_version }}'
+            dest: '{{ webservice_source_path }}'
+
+      - name: create webservice venv
+        include_role:
+            name: external/nmaekawa.virtualenv
+        vars:
+            venv_path: "{{ webservice_venv }}"
+            venv_user: "{{ webservice_user }}"
+            venv_group: "{{ webservice_group }}"
+            venv_python_version: 3
+
+      - name: pip install requirements
+        become_user: "{{ webservice_user }}"
+        pip:
+            chdir: "{{ webservice_source_path }}"
+            virtualenv: "{{ webservice_venv }}"
+            requirements: "{{ webservice_source_path }}/requirements.txt"
+            state: present
+
+      - name: pip install webservice
+        become_user: "{{ webservice_user }}"
+        pip:
+            chdir: "{{ webservice_source_path }}"
+            virtualenv: "{{ webservice_venv }}"
+            name: '.'
+            editable: no
+            state: forcereinstall
+
+
