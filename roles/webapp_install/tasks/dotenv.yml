@@ -1,0 +1,9 @@
+---
+      - name: dotenv | add dotenv_dir to .bashrc
+        become_user: "{{ service_user }}"
+        lineinfile:
+            path: /home/{{ service_user }}/.bashrc
+            line: "export {{ service_name | upper }}_DOTENV_PATH={{ service_config_dir }}"
+            backup: yes
+            state: present
+

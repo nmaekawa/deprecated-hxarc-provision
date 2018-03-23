@@ -1,91 +1,10 @@
 ---
 # tasks file for webapp_install
 
-      - name: dirs | ensure service dirs are present
-        file:
-            path: "{{ item }}"
-            owner: "{{ service_user }}"
-            group: "{{ service_group }}"
-            mode: 0755
-            state: directory
-        with_items: "{{ service_dirs_to_create }}"
-
-      - name: git | clone repository
-        become_user: '{{ service_user }}'
-        git:
-            repo: '{{ service_git_repo }}'
-            update: yes
-            clone: yes
-            force: yes
-            version: '{{ service_git_version }}'
-            dest: '{{ service_install_dir }}'
-
-      - name: venv | create service venv
-        include_role:
-            name: external/nmaekawa.virtualenv
-        vars:
-            venv_path: "{{ service_venv_dir }}"
-            venv_user: "{{ service_user }}"
-            venv_group: "{{ service_group }}"
-            venv_python_version: 3
-
-      - name: venv | pip install requirements
-        become_user: "{{ service_user }}"
-        pip:
-            chdir: "{{ service_install_dir }}"
-            virtualenv: "{{ service_venv_dir }}"
-            requirements: "{{ service_install_dir }}/requirements.txt"
-            state: present
-
-      - name: venv | pip install service
-        become_user: "{{ service_user }}"
-        pip:
-            chdir: "{{ service_install_dir }}"
-            virtualenv: "{{ service_venv_dir }}"
-            name: '.'
-            editable: no
-            state: forcereinstall
-
-      - name: dotenv | add dotenv_dir to .bashrc
-        become_user: "{{ service_user }}"
-        lineinfile:
-            path: /home/{{ service_user }}/.bashrc
-            line: "export {{ service_name | upper }}_DOTENV_PATH={{ service_config_dir }}"
-            backup: yes
-            state: present
-
-      - name: gunicorn | install gunicorn in webapp venv
-        become_user: "{{ service_user }}"
-        pip:
-            virtualenv: "{{ service_venv_dir }}"
-            chdir: "{{ service_install_dir }}"
-            name: gunicorn
-            state: present
-
-      - name: gunicorn | create gunicorn config
-        become_user: "{{ service_user }}"
-        template:
-            src: gunicorn_start.j2
-            dest: "{{ service_venv_dir }}/bin/gunicorn_start"
-            owner: "{{ service_user }}"
-            group: "{{ service_group }}"
-            mode: 0755
-            backup: yes
-
-      - name: supervisor | ensure supervisor is running
-        service:
-            name: supervisor
-            state: started
-            enabled: yes
-
-      - name: supervisor | create supervisor config
-        template:
-            src: supervisor_config.j2
-            dest: /etc/supervisor/conf.d/{{ service_name }}.conf
-            backup: yes
-
-      - name: supervisor | reload supervisor config for {{ service_name }}
-        supervisorctl:
-            name: "{{ service_name }}"
-            state: present
+      - include_tasks: create_dirs.yml
+      - include_tasks: clone_repo.yml
+      - include_tasks: venv.yml
+      - include_tasks: dotenv.yml
+      - include_tasks: gunicorn.yml
+      - include_tasks: supervisor.yml
 

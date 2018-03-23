@@ -25,6 +25,8 @@ service_dirs_to_create:
 
 service_dotenv_path: "{{ service_config_dir }}/{{ service_name }}.env"
 service_log_path: "{{ service_log_dir }}/{{ service_name }}.log"
+service_admin_user: "{{ lookup('env', 'HXARC_ADMIN_USER') | default('user', true) }}"
+service_admin_password: "{{ lookup('env', 'HXARC_ADMIN_PASSWORD') | default('password', true) }}"
 
 
 # subproc vars

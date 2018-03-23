@@ -1,0 +1,29 @@
+---
+
+- name: restart crontab
+  service:
+    name: cron
+    state: restarted
+
+- name: restart postgres
+  service:
+    name: postgresql
+    state: restarted
+    enabled: yes
+
+- name: restart webapp
+  supervisorctl:
+    name: "{{ service_name }}"
+    state: restarted
+
+- name: reload nginx
+  service:
+    name: nginx
+    state: reloaded
+
+- name: restart nginx
+  service:
+    name: nginx
+    state: restarted
+    enabled: yes
+
