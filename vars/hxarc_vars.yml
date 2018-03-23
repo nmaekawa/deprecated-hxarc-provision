@@ -6,6 +6,29 @@ my_remote_user: "{{ use_aws | ternary('ubuntu', 'vagrant') }}"
 
 
 
+# subproc vars
+subproc_name: "hxpy"
+subproc_user: "{{ service_name }}"  # use same as web
+subproc_group: "{{ service_name }}"  # use same as web
+subproc_rootdir: "/opt/{{ subproc_name }}"
+subproc_venv_dir: "{{ subproc_rootdir }}/venv"
+subproc_bin_dir: "{{ subproc_rootdir }}/bin"
+subproc_install_dir: "{{ subproc_rootdir }}/{{ subproc_name }}"
+subproc_script_path: "{{ subproc_install_dir }}/XML_utilities/HXLiveTools.py"
+subproc_wrapper_path: "{{ subproc_bin_dir }}/wrapper.sh"
+subproc_git_repo: "https://github.com/Colin-Fredericks/hx-py.git"
+subproc_git_version: "master"
+
+subproc_dirs_to_create:
+    - "{{ subproc_rootdir }}"
+    - "{{ subproc_bin_dir }}"
+
+subproc_python_dependencies:
+    - 'bs4'
+    - 'unicodecsv'
+    - 'lxml'
+
+
 # service vars
 service_name: "hxarc"
 service_user: "{{ service_name }}"
@@ -13,8 +36,12 @@ service_group: "{{ service_name }}"
 service_rootdir: "/opt/{{ service_name }}"
 service_venv_dir: "{{ service_rootdir }}/venv"
 service_log_dir: "{{ service_rootdir }}/log"
-service_install_dir: "{{ service_rootdir }}/{{ service_name }}"
 service_config_dir: "{{ service_rootdir }}/conf"
+service_install_dir: "{{ service_rootdir }}/{{ service_name }}"
+service_data_dir: "{{ service_rootdir }}/data"
+service_work_dir: "{{ service_data_dir }}/work"
+service_db_dir: "{{ service_data_dir }}/db"
+service_bin_dir: "{{ service_rootdir }}/bin"
 service_git_repo: "https://github.com/nmaekawa/hxarc.git"
 service_git_version: "master"
 
@@ -22,21 +49,22 @@ service_dirs_to_create:
     - "{{ service_rootdir }}"
     - "{{ service_log_dir }}"
     - "{{ service_config_dir }}"
+    - "{{ service_data_dir }}"
+    - "{{ service_work_dir }}"
+    - "{{ service_db_dir }}"
+    - "{{ service_bin_dir }}"
 
 service_dotenv_path: "{{ service_config_dir }}/{{ service_name }}.env"
 service_log_path: "{{ service_log_dir }}/{{ service_name }}.log"
 service_admin_user: "{{ lookup('env', 'HXARC_ADMIN_USER') | default('user', true) }}"
 service_admin_password: "{{ lookup('env', 'HXARC_ADMIN_PASSWORD') | default('password', true) }}"
-
-
-# subproc vars
-subproc_name: "hxpy"
-subproc_user: "{{ service_name }}"  # use same as web
-subproc_group: "{{ service_name }}"  # use same as web
-subproc_rootdir: "/opt/{{ subproc_name }}"
-subproc_venv: "{{ subproc_rootdir }}/venv"
-subproc_install_dir: "{{ subproc_rootdir }}/{{ subproc_name }}"
-
+service_environment:
+  HXARC_SECRET: "{{ lookup('env', 'HXARC_SECRET') | default('nao pode mais meu coracao viver assim', true) }}"
+  HXARC_LOG_CONFIG: "{{ service_install_dir }}/logging.yaml"
+  HXARC_UPLOAD_DIR: "{{ service_work_dir }}"
+  HXARC_UPLOAD_FILENAME: "export"
+  HXARC_DB_PATH: "{{ service_db_dir }}/{{ service_name }}.db"
+  HXARC_SCRIPT_PATH: "{{ subproc_wrapper_path }}"
 
 
 # for nmaekawa.apt

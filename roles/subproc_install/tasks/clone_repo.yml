@@ -1,0 +1,12 @@
+---
+
+      - name: git | clone SUBPROC repository
+        become_user: '{{ subproc_user }}'
+        git:
+            repo: '{{ subproc_git_repo }}'
+            update: yes
+            clone: yes
+            force: yes
+            version: '{{ subproc_git_version }}'
+            dest: '{{ subproc_install_dir }}'
+

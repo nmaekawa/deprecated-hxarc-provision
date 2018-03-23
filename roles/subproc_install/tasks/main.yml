@@ -1,0 +1,17 @@
+---
+# tasks file for subproc_install
+
+- include_tasks: create_dirs.yml
+- include_tasks: clone_repo.yml
+
+- name: remove local packages from repo
+  file:
+      path: "{{ subproc_install_dir }}/XML_utilities/{{ item }}"
+      state: absent
+  with_items: "{{ subproc_python_dependencies }}"
+
+- include_tasks: venv.yml
+- include_tasks: wrapper.yml
+
+
+

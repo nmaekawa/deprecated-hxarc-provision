@@ -1,0 +1,20 @@
+---
+      - name: venv | create subproc venv
+        include_role:
+            name: external/nmaekawa.virtualenv
+        vars:
+            venv_path: "{{ subproc_venv_dir }}"
+            venv_user: "{{ subproc_user }}"
+            venv_group: "{{ subproc_group }}"
+            venv_python_version: 3
+
+      - name: venv | pip install requirements
+        become_user: "{{ subproc_user }}"
+        pip:
+            chdir: "{{ subproc_install_dir }}"
+            virtualenv: "{{ subproc_venv_dir }}"
+            name: "{{ item }}"
+            state: present
+        with_items: "{{ subproc_python_dependencies }}"
+
+

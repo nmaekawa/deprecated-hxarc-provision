@@ -32,8 +32,14 @@
   become: yes
   vars_files:
       - vars/hxarc_vars.yml
+  handlers:
+    - include_tasks: handlers/handlers.yml
 
   tasks:
+      - name: install subproc
+        include_role:
+            name: subproc_install
+
       - name: install webapp
         include_role:
             name: webapp_install

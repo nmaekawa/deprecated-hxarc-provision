@@ -1,0 +1,10 @@
+---
+      - name: dirs | ensure SUBPROC dirs are present
+        file:
+            path: "{{ item }}"
+            owner: "{{ service_user }}"
+            group: "{{ service_group }}"
+            mode: 0755
+            state: directory
+        with_items: "{{ subproc_dirs_to_create }}"
+
