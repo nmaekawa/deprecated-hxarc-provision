@@ -6,32 +6,34 @@ my_remote_user: "{{ use_aws | ternary('ubuntu', 'vagrant') }}"
 
 
 
-# webservice vars
-webservice_name: "hxarc"
-webservice_user: "{{ webservice_name }}"
-webservice_group: "{{ webservice_name }}"
-webservice_rootdir: "/opt/{{ webservice_name }}"
-webservice_venv: "{{ webservice_rootdir }}/venv"
-webservice_log_path: "{{ webservice_rootdir }}/log"
-webservice_source_path: "{{ webservice_rootdir }}/{{ webservice_name }}"
-webservice_config_path: "{{ webservice_rootdir }}/conf"
-webservice_config_filename: "{{ webservice_name }}.env"
-webservice_git_repo: "https://github.com/nmaekawa/hxarc.git"
-webservice_git_version: "master"
+# service vars
+service_name: "hxarc"
+service_user: "{{ service_name }}"
+service_group: "{{ service_name }}"
+service_rootdir: "/opt/{{ service_name }}"
+service_venv_dir: "{{ service_rootdir }}/venv"
+service_log_dir: "{{ service_rootdir }}/log"
+service_install_dir: "{{ service_rootdir }}/{{ service_name }}"
+service_config_dir: "{{ service_rootdir }}/conf"
+service_git_repo: "https://github.com/nmaekawa/hxarc.git"
+service_git_version: "master"
 
-webservice_dirs_to_create:
-    - "{{ webservice_rootdir }}"
-    - "{{ webservice_log_path }}"
-    - "{{ webservice_config_path }}"
+service_dirs_to_create:
+    - "{{ service_rootdir }}"
+    - "{{ service_log_dir }}"
+    - "{{ service_config_dir }}"
+
+service_dotenv_path: "{{ service_config_dir }}/{{ service_name }}.env"
+service_log_path: "{{ service_log_dir }}/{{ service_name }}.log"
 
 
-# utility script vars
-utilservice_name: "hxpy"
-utilservice_user: "{{ webservice_name }}"  # use same as web
-utilservice_group: "{{ webservice_name }}"  # use same as web
-utilservice_rootdir: "/opt/{{ utilservice_name }}"
-utilservice_venv: "{{ utilservice_rootdir }}/venv"
-utilservice_source_path: "{{ utilservice_rootdir }}/{{ utilservice_name }}"
+# subproc vars
+subproc_name: "hxpy"
+subproc_user: "{{ service_name }}"  # use same as web
+subproc_group: "{{ service_name }}"  # use same as web
+subproc_rootdir: "/opt/{{ subproc_name }}"
+subproc_venv: "{{ subproc_rootdir }}/venv"
+subproc_install_dir: "{{ subproc_rootdir }}/{{ subproc_name }}"
 
 
 
@@ -48,10 +50,10 @@ apt_required_packages_hxarc:
 users_enabled: yes
 
 users_users:
-    - name: '{{ webservice_user }}'
+    - name: '{{ service_user }}'
       authorized: []
 
-    - name: '{{ utilservice_user }}'
+    - name: '{{ subproc_user }}'
       authorized: []
 
 
@@ -59,6 +61,6 @@ users_users:
 users_ssh_keys: '{{ users_users }}'
 
 users_to_install:
-    - '{{ webservice_user }}'
-    - '{{ utilservice_user }}'
+    - '{{ service_user }}'
+    - '{{ subproc_user }}'
 
