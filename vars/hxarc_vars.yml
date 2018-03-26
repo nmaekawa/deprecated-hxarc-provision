@@ -42,7 +42,7 @@ service_data_dir: "{{ service_rootdir }}/data"
 service_work_dir: "{{ service_data_dir }}/work"
 service_db_dir: "{{ service_data_dir }}/db"
 service_bin_dir: "{{ service_rootdir }}/bin"
-service_static_dir: "{{ service_rootdir }}/static"
+service_static_dir: "{{ service_rootdir }}/www"
 service_git_repo: "https://github.com/nmaekawa/hxarc.git"
 service_git_version: "provision"
 
@@ -54,10 +54,12 @@ service_dirs_to_create:
     - "{{ service_work_dir }}"
     - "{{ service_db_dir }}"
     - "{{ service_bin_dir }}"
+    - "{{ service_static_dir }}"
 
 service_dotenv_path: "{{ service_config_dir }}/{{ service_name }}.env"
 service_log_path: "{{ service_log_dir }}/{{ service_name }}.log"
 service_admin_user: "{{ lookup('env', 'HXARC_ADMIN_USER') | default('user', true) }}"
+service_admin_email: "{{ lookup('env', 'HXARC_ADMIN_EMAIL') | default('user@user.com', true) }}"
 service_admin_password: "{{ lookup('env', 'HXARC_ADMIN_PASSWORD') | default('password', true) }}"
 service_environment:
   HXARC_SECRET: "{{ lookup('env', 'HXARC_SECRET') | default('nao pode mais meu coracao viver assim', true) }}"

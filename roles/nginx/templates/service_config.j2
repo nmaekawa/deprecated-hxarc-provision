@@ -30,11 +30,11 @@ server {
     error_log {{ nginx_error_log_path }};
 
     location /static/ {
-        alias   {{ nginx_static_dir }};
+        alias   {{ nginx_static_dir }}/static/;
     }
 
     location /media/ {
-        alias   {{ nginx_media_dir }};
+        alias   {{ nginx_media_dir }}/;
     }
 
     location / {
@@ -50,7 +50,8 @@ server {
         # Try to serve static files from nginx, no point in making an
         # *application* server like Unicorn/Rainbows! serve static files.
         if (!-f $request_filename) {
-            proxy_pass http://{{ service_name }}_wsgi_server;
+            #proxy_pass http://{{ service_name }}_wsgi_server;
+            proxy_pass http://{{ service_gunicorn_host }}:{{ service_gunicorn_port }};
             break;
         }
     }
@@ -77,11 +78,11 @@ server {
     error_log {{ nginx_error_log_path }};
 
     location /static/ {
-        alias   {{ nginx_static_dir }};
+        alias   {{ nginx_static_dir }}/static/;
     }
 
     location /media/ {
-        alias   {{ nginx_media_dir }};
+        alias   {{ nginx_media_dir }}/static/;
     }
 
     location / {
@@ -97,7 +98,8 @@ server {
         # Try to serve static files from nginx, no point in making an
         # *application* server like Unicorn/Rainbows! serve static files.
         if (!-f $request_filename) {
-            proxy_pass http://{{ service_name }}_wsgi_server;
+            #proxy_pass http://{{ service_name }}_wsgi_server;
+            proxy_pass http://{{ service_gunicorn_host }}:{{ service_gunicorn_port }};
             break;
         }
     }

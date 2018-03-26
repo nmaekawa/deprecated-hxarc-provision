@@ -7,4 +7,5 @@
       - include_tasks: dotenv.yml
       - include_tasks: gunicorn.yml
       - include_tasks: supervisor.yml
+      - include_tasks: flask_admin.yml
 
