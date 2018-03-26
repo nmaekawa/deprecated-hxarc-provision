@@ -22,6 +22,6 @@
             chdir: "{{ service_install_dir }}"
             virtualenv: "{{ service_venv_dir }}"
             name: '.'
-            editable: no
-            state: forcereinstall
+            editable: yes
+            state: forcereinstall  # assumes setup.py does not list any dependencies!
 

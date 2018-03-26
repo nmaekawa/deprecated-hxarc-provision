@@ -43,7 +43,7 @@ service_work_dir: "{{ service_data_dir }}/work"
 service_db_dir: "{{ service_data_dir }}/db"
 service_bin_dir: "{{ service_rootdir }}/bin"
 service_git_repo: "https://github.com/nmaekawa/hxarc.git"
-service_git_version: "master"
+service_git_version: "provision"
 
 service_dirs_to_create:
     - "{{ service_rootdir }}"
@@ -65,6 +65,9 @@ service_environment:
   HXARC_UPLOAD_FILENAME: "export"
   HXARC_DB_PATH: "{{ service_db_dir }}/{{ service_name }}.db"
   HXARC_SCRIPT_PATH: "{{ subproc_wrapper_path }}"
+
+service_gunicorn_port: "8123"
+service_gunicorn_host: "0.0.0.0"  # CHANGE ME!!!
 
 
 # for nmaekawa.apt
