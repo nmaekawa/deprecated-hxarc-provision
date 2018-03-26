@@ -4,7 +4,7 @@
 use_aws: "{{ (ec2_tag_cluster == 'vagrant') | ternary(False, True) }}"
 my_remote_user: "{{ use_aws | ternary('ubuntu', 'vagrant') }}"
 
-
+org_dns_domain: "harvardx.harvard.edu"
 
 # subproc vars
 subproc_name: "hxpy"
@@ -42,6 +42,7 @@ service_data_dir: "{{ service_rootdir }}/data"
 service_work_dir: "{{ service_data_dir }}/work"
 service_db_dir: "{{ service_data_dir }}/db"
 service_bin_dir: "{{ service_rootdir }}/bin"
+service_static_dir: "{{ service_rootdir }}/static"
 service_git_repo: "https://github.com/nmaekawa/hxarc.git"
 service_git_version: "provision"
 
@@ -68,6 +69,18 @@ service_environment:
 
 service_gunicorn_port: "8123"
 service_gunicorn_host: "0.0.0.0"  # CHANGE ME!!!
+
+
+# nginx vars
+nginx_access_log_path: "{{ service_log_dir }}/nginx_access.log"
+nginx_error_log_path: "{{ service_log_dir }}/nginx_error.log"
+nginx_ssl_dest_dir: "/etc/ssl/certs"
+nginx_static_dir: "{{ service_static_dir }}"
+nginx_media_dir: "{{ nginx_static_dir }}"
+var_service_local_certs_dir: "{{ service_name | upper }}_LOCAL_CERTS_DIR"
+local_certs_dir: "{{ lookup('env', var_service_local_certs_dir) | default('./vars', true) }}"
+var_service_enable_ssl: "{{ service_name | upper }}_ENABLE_SSL"
+enable_ssl: "{{ lookup('env', var_service_enable_ssl) | default('false', true) }}"
 
 
 # for nmaekawa.apt

@@ -25,6 +25,7 @@
       - external/jmcvetta.passwordless_sudo
       - { role: external/nmaekawa.apt, apt_other_packages: "{{ apt_required_packages_hxarc }}" }
       - external/Stouts.users
+      - facts_setup
 
 
 - hosts: tag_hxarc
@@ -33,7 +34,7 @@
   vars_files:
       - vars/hxarc_vars.yml
   handlers:
-    - include_tasks: handlers/handlers.yml
+    - include_tasks: handlers/main.yml
 
   tasks:
       - name: install subproc
@@ -44,6 +45,8 @@
         include_role:
             name: webapp_install
 
-
+      - name: config nginx
+        include_role:
+            name: nginx
 
 

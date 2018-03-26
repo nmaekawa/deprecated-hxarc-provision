@@ -5,12 +5,6 @@
     name: cron
     state: restarted
 
-- name: restart postgres
-  service:
-    name: postgresql
-    state: restarted
-    enabled: yes
-
 - name: restart webapp
   supervisorctl:
     name: "{{ service_name }}"
