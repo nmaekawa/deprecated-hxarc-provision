@@ -83,6 +83,7 @@ var_service_local_certs_dir: "{{ service_name | upper }}_LOCAL_CERTS_DIR"
 local_certs_dir: "{{ lookup('env', var_service_local_certs_dir) | default('./vars', true) }}"
 var_service_enable_ssl: "{{ service_name | upper }}_ENABLE_SSL"
 enable_ssl: "{{ lookup('env', var_service_enable_ssl) | default('false', true) }}"
+service_upload_max_size: "500M"
 
 
 # for nmaekawa.apt

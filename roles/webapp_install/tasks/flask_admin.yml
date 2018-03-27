@@ -36,7 +36,7 @@
     - fail:
         msg: "error creating admin user for service {{ service_name }}: {{ create_user.stdout }}"
       when:
-          "create_user.rc != 0 and 'already exitst' not in create_user.stdout"
+          "create_user.rc != 0 and 'already exists' not in create_user.stdout"
 
 
 
