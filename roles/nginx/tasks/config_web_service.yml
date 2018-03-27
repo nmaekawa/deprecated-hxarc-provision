@@ -25,7 +25,7 @@
         dest: "{{ nginx_ssl_dest_dir }}/{{ service_name }}.crt"
         state: link
       when: enable_ssl == 'true' and ec2_tag_cluster == 'prod'
-      notify: restart nginx
+      notify: reload nginx
 
 
     - name: link ssl key to correct file for prod cluster
@@ -34,7 +34,7 @@
         dest: "{{ nginx_ssl_dest_dir }}/{{ service_name }}.key"
         state: link
       when: enable_ssl == 'true' and ec2_tag_cluster == 'prod'
-      notify: restart nginx
+      notify: reload nginx
 
 
     - name: link ssl cert to correct file
@@ -43,7 +43,7 @@
         dest: "{{ nginx_ssl_dest_dir }}/{{ service_name }}.crt"
         state: link
       when: enable_ssl == 'true' and ec2_tag_cluster != 'prod'
-      notify: restart nginx
+      notify: reload nginx
 
 
     - name: link ssl key to correct file
@@ -52,7 +52,7 @@
         dest: "{{ nginx_ssl_dest_dir }}/{{ service_name }}.key"
         state: link
       when: enable_ssl == 'true' and ec2_tag_cluster != 'prod'
-      notify: restart nginx
+      notify: reload nginx
 
 
     - name: ensure service site is enabled
@@ -60,5 +60,5 @@
         src: /etc/nginx/sites-available/{{ (enable_ssl == 'true') | ternary('ssl', 'nonssl') }}_{{ service_name }}
         dest: /etc/nginx/sites-enabled/{{ service_name }}
         state: link
-      notify: restart nginx
+      notify: reload nginx
 
