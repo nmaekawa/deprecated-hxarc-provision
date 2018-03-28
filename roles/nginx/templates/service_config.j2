@@ -3,8 +3,8 @@ upstream {{ service_name }}_wsgi_server {
   # to return a good HTTP response (in case the Unicorn master nukes a
   # single worker for timing out).
 
-  #server unix:{{ service_venv_dir }}/run/gunicorn.sock fail_timeout=0;
-  server {{ service_gunicorn_host }}:{{ service_gunicorn_port }};
+  server unix:{{ service_venv_dir }}/run/gunicorn.sock fail_timeout=0;
+  #server {{ service_gunicorn_host }}:{{ service_gunicorn_port }};
 }
 
 {% if (with_ssl == 'true') %}
@@ -50,8 +50,8 @@ server {
         # Try to serve static files from nginx, no point in making an
         # *application* server like Unicorn/Rainbows! serve static files.
         if (!-f $request_filename) {
-            #proxy_pass http://{{ service_name }}_wsgi_server;
-            proxy_pass http://{{ service_gunicorn_host }}:{{ service_gunicorn_port }};
+            proxy_pass http://{{ service_name }}_wsgi_server;
+            #proxy_pass http://{{ service_gunicorn_host }}:{{ service_gunicorn_port }};
             break;
         }
     }
