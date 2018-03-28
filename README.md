@@ -8,7 +8,7 @@ for demo purposes only! provided to show how to setup a hxarc vagrant
 installation and support to this repo is OUT-OF-SCOPE at this time.
 
 
-# for local vagrant catchpy
+# for local vagrant hxarc
 
 you'll need:
 
@@ -42,6 +42,9 @@ when installing hxarc:
 
 run:
 
+    # install external ansible roles
+    $> ansible-galaxy -r roles/requirements.yml
+    
     # set vagrant insecure key in your env
     $> ssh-add ~/.vagrant.d/insecure_private_key
     $> ansible-playbook -i hosts/vagrant.ini hxarc_play.yml
