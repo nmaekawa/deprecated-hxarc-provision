@@ -7,6 +7,6 @@
             update: yes
             clone: yes
             force: yes
-            version: '{{ subproc_git_version }}'
+            version: '{{ subproc_git_revision }}'
             dest: '{{ subproc_install_dir }}'
 

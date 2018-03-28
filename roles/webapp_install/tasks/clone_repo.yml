@@ -6,7 +6,7 @@
           update: yes
           clone: yes
           force: yes
-          version: '{{ service_git_version }}'
+          version: '{{ service_git_revision }}'
           dest: '{{ service_install_dir }}'
 
     - name: git | move static content to nginx static dir

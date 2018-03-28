@@ -17,7 +17,7 @@ subproc_install_dir: "{{ subproc_rootdir }}/{{ subproc_name }}"
 subproc_script_path: "{{ subproc_install_dir }}/XML_utilities/HXLiveTools.py"
 subproc_wrapper_path: "{{ subproc_bin_dir }}/wrapper.sh"
 subproc_git_repo: "https://github.com/Colin-Fredericks/hx-py.git"
-subproc_git_version: "master"
+subproc_git_revision: "master"
 
 subproc_dirs_to_create:
     - "{{ subproc_rootdir }}"
@@ -44,7 +44,8 @@ service_db_dir: "{{ service_data_dir }}/db"
 service_bin_dir: "{{ service_rootdir }}/bin"
 service_static_dir: "{{ service_rootdir }}/www"
 service_git_repo: "https://github.com/nmaekawa/hxarc.git"
-service_git_version: "provision"
+var_service_git_revision: "{{ service_name | upper }}_GIT_REVISION"
+service_git_revision: "{{ lookup('env', var_service_git_revision) | default('master', true) }}"
 
 service_dirs_to_create:
     - "{{ service_rootdir }}"
@@ -69,6 +70,7 @@ service_environment:
   HXARC_DB_PATH: "{{ service_db_dir }}/{{ service_name }}.db"
   HXARC_SCRIPT_PATH: "{{ subproc_wrapper_path }}"
 
+# TODO: sockets or tcp port have to be manually edited in template
 service_gunicorn_port: "8123"
 service_gunicorn_host: "0.0.0.0"  # CHANGE ME!!!
 
