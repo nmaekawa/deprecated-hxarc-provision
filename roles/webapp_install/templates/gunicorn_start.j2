@@ -23,8 +23,8 @@ cd $SERVICE_INSTALL_DIR
 export {{ service_name | upper }}_DOTENV_PATH="{{ service_dotenv_path }}"
 
 # create the run directory if it doesn't exist
-#RUNDIR=$(dirname $SOCKFILE)
-#test -d $RUNDIR || mkdir -p $RUNDIR
+RUNDIR=$(dirname $SOCKFILE)
+test -d $RUNDIR || mkdir -p $RUNDIR
 
 # run under supervisor so do not use --daemon
 exec gunicorn \
