@@ -19,6 +19,10 @@ subproc_wrapper_path: "{{ subproc_bin_dir }}/wrapper.sh"
 subproc_git_repo: "https://github.com/Colin-Fredericks/hx-py.git"
 subproc_git_revision: "master"
 
+# how long output files take to be deleted
+# this is set in the service provisioning in a cronjob
+subproc_grace_period_in_minutes: 60
+
 subproc_dirs_to_create:
     - "{{ subproc_rootdir }}"
     - "{{ subproc_bin_dir }}"

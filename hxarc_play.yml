@@ -1,5 +1,5 @@
 ---
-- hosts: tag_hxarc
+- hosts: tag_webserver
   remote_user: "{{ my_remote_user }}"
   become: yes
   become_user: root
@@ -14,7 +14,7 @@
         changed_when: "result.stdout != ''"
 
 
-- hosts: tag_hxarc
+- hosts: tag_webserver
   remote_user: "{{ my_remote_user }}"
   become: yes
   become_user: root
@@ -28,7 +28,7 @@
       - facts_setup
 
 
-- hosts: tag_hxarc
+- hosts: tag_webserver
   remote_user: "{{ my_remote_user }}"
   become: yes
   vars_files:

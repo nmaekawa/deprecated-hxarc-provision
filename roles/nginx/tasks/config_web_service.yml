@@ -16,7 +16,7 @@
       replace:
         path: /etc/nginx/sites-available/nonssl_{{ service_name }}
         regexp: '^(\s+)server_name\s+.*$'
-        replace: '\1server_name {{ webserver_dns }}'
+        replace: '\1server_name {{ webserver_dns }};'
         backup: yes
 
     - name: link ssl cert to correct file for prod cluster
