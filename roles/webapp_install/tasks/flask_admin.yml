@@ -1,5 +1,5 @@
 ---
-    - name: admin user | flask upgrade
+    - name: flask upgrade
       become_user: "{{ service_user }}"
       shell: >
           export {{ service_name | upper}}_DOTENV_PATH={{ service_dotenv_path }} &&
@@ -8,13 +8,6 @@
           flask db upgrade
       args:
           chdir: "{{ service_install_dir }}"
-      #register: flask_db_upgrade
-      #ignore_errors: True
-
-      #- fail:
-      #  msg: "error during db migration for service {{ service_name }}: {{ flask_db_upgrade.stdout }}"
-      #when:
-      #    "flask_db_upgrade.rc != 0"
 
 
     - name: admin user | create admin user
@@ -37,6 +30,22 @@
         msg: "error creating admin user for service {{ service_name }}: {{ create_user.stdout }}"
       when:
           "create_user.rc != 0 and 'already exists' not in create_user.stdout"
+
+
+    - name: other user | create other users
+      become_user: "{{ service_user }}"
+      shell: >
+          export {{ service_name | upper}}_DOTENV_PATH={{ service_dotenv_path }} &&
+          export FLASK_APP={{ service_name }}/wsgi.py &&
+          . {{ service_venv_dir }}/bin/activate &&
+          flask create_user
+          --usr '{{ item.username }}'
+          --pwd '{{ item.password }}'
+          --email '{{ item.email }}'
+      args:
+          chdir: "{{ service_install_dir }}"
+      ignore_errors: True
+      with_items: "{{ service_flask_users }}"
 
 
 

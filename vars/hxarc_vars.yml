@@ -74,6 +74,9 @@ service_environment:
   HXARC_DB_PATH: "{{ service_db_dir }}/{{ service_name }}.db"
   HXARC_SCRIPT_PATH: "{{ subproc_wrapper_path }}"
 
+service_flask_users: []
+
+
 # TODO: sockets or tcp port have to be manually edited in template
 service_gunicorn_port: "8123"
 service_gunicorn_host: "0.0.0.0"  # CHANGE ME!!!
