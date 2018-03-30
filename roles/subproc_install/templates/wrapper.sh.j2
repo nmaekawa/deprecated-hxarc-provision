@@ -23,7 +23,7 @@ ${SCRIPT_VENV}/bin/python ${SCRIPT_FILENAME} ${input_dir}/course
 echo "***** done processing"
 echo
 
-result_dir=/tmp/${input_id}/result
+result_dir=${input_dir}/result_${input_id}
 mkdir -p ${result_dir}
 
 echo "***** copying output files to ${result_dir}"
@@ -36,8 +36,8 @@ cp ${input_dir}/*.zip ${result_dir}
 echo "***** generating tar.gz"
 echo
 
-cd /tmp/${input_id}
-tar cvzf ${input_dir}/result.tar.gz result
+cd ${input_dir}
+tar cvzf ${input_dir}/result.tar.gz result_${input_id}
 
 echo "***** all done"
 
