@@ -10,3 +10,9 @@
       - include_tasks: flask_admin.yml
       - include_tasks: cleanup.yml
 
+      - name: restart service
+        supervisorctl:
+            name: "{{ service_name }}"
+            state: restarted
+
+

@@ -3,7 +3,7 @@
         become_user: "{{ service_user }}"
         lineinfile:
             path: /home/{{ service_user }}/.bashrc
-            line: "export {{ service_name | upper }}_DOTENV_PATH={{ service_config_path }}"
+            line: "export {{ service_name | upper }}_DOTENV_PATH={{ service_dotenv_path }}"
             backup: yes
             state: present
 

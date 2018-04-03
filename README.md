@@ -42,15 +42,25 @@ when installing hxarc:
 
 run:
 
+    # you do want a virtualenv
+    $> cd hxarc-provision
+    $> virtualenv venv
+    $> source venv/bin/activate
+    (venv) $> pip install ansible
+    
     # install external ansible roles
-    $> ansible-galaxy -r roles/requirements.yml
+    (venv) $> cd roles
+    (venv) $> ansible-galaxy -r requirements.yml
+    
+    # back to hxarc-provision root dir
+    (venv) $> cd ..
     
     # set vagrant insecure key in your env
-    $> ssh-add ~/.vagrant.d/insecure_private_key
-    $> ansible-playbook -i hosts/vagrant.ini hxarc_play.yml
+    (venv) $> ssh-add ~/.vagrant.d/insecure_private_key
+    (venv) $> ansible-playbook -i hosts/vagrant.ini hxarc_play.yml
     
     # or specify it in the command line
-    $> ansible-playbook -i hosts/vagrant.ini --private-key ~/.vagrant.d/insecure_private_key hxarc_play.ym
+    (venv) $> ansible-playbook -i hosts/vagrant.ini --private-key ~/.vagrant.d/insecure_private_key hxarc_play.ym
 
 
 the default configuration:
@@ -61,7 +71,7 @@ the default configuration:
   `/opt/hxarg/venv/bin/gunicorn_start`
 - gunicorn is configured to talk to nginx via a socket at
   `/opt/hxarc/venv/run/gunicorn.sock`
-- default user is 'user:password'
+- default webapp user is 'user:password'
 - nginx for dev env uses HTTP
 
 if all goes well, you should be able to check it out at
