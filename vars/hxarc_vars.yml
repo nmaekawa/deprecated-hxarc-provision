@@ -102,6 +102,7 @@ apt_required_packages_hxarc:
     - 'python-setuptools'
     - 'nginx'
     - 'supervisor'
+    - 'qpdf'
 
 
 # for Stouts.users
