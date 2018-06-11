@@ -19,30 +19,14 @@
         replace: '\1server_name {{ webserver_dns }};'
         backup: yes
 
-    - name: link ssl cert to correct file for prod cluster
-      file:
-        src: "{{ nginx_ssl_dest_dir }}/{{ cert_partial_filename }}_bundle.crt"
-        dest: "{{ nginx_ssl_dest_dir }}/{{ service_name }}.crt"
-        state: link
-      when: enable_ssl == 'true' and ec2_tag_cluster == 'prod'
-      notify: reload nginx
-
-
-    - name: link ssl key to correct file for prod cluster
-      file:
-        src: "{{ nginx_ssl_dest_dir }}/{{ cert_partial_filename }}.key"
-        dest: "{{ nginx_ssl_dest_dir }}/{{ service_name }}.key"
-        state: link
-      when: enable_ssl == 'true' and ec2_tag_cluster == 'prod'
-      notify: reload nginx
-
-
+    # hxarc uses wildcard cert for prod, too
+    # usually "live.hxarc.harvardx.harvard.edu"
     - name: link ssl cert to correct file
       file:
         src: "{{ nginx_ssl_dest_dir }}/all_{{ cert_partial_filename }}_bundle.crt"
         dest: "{{ nginx_ssl_dest_dir }}/{{ service_name }}.crt"
         state: link
-      when: enable_ssl == 'true' and ec2_tag_cluster != 'prod'
+      when: enable_ssl == 'true'
       notify: reload nginx
 
 
@@ -51,7 +35,7 @@
         src: "{{ nginx_ssl_dest_dir }}/all_{{ cert_partial_filename }}.key"
         dest: "{{ nginx_ssl_dest_dir }}/{{ service_name }}.key"
         state: link
-      when: enable_ssl == 'true' and ec2_tag_cluster != 'prod'
+      when: enable_ssl == 'true'
       notify: reload nginx
 
 
