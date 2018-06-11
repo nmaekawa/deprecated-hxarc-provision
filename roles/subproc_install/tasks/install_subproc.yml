@@ -1,0 +1,10 @@
+---
+
+      - name: pip | install SUBPROC from repo
+        become_user: '{{ subproc_user }}'
+        pip:
+            name: 'git+{{ subproc_git_repo }}@{{ subproc_git_revision }}'
+            virtualenv: '{{ subproc_venv_dir }}'
+            state: present
+
+

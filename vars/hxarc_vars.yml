@@ -7,16 +7,16 @@ my_remote_user: "{{ use_aws | ternary('ubuntu', 'vagrant') }}"
 org_dns_domain: "harvardx.harvard.edu"
 
 # subproc vars
-subproc_name: "hxpy"
+subproc_name: "hx_util"
 subproc_user: "{{ service_name }}"  # use same as web
 subproc_group: "{{ service_name }}"  # use same as web
 subproc_rootdir: "/opt/{{ subproc_name }}"
 subproc_venv_dir: "{{ subproc_rootdir }}/venv"
 subproc_bin_dir: "{{ subproc_rootdir }}/bin"
 subproc_install_dir: "{{ subproc_rootdir }}/{{ subproc_name }}"
-subproc_script_path: "{{ subproc_install_dir }}/XML_utilities/HXLiveTools.py"
+subproc_script_path: "{{ subproc_venv_dir }}/bin/{{ subproc_name }}"
 subproc_wrapper_path: "{{ subproc_bin_dir }}/wrapper.sh"
-subproc_git_repo: "https://github.com/Colin-Fredericks/hx-py.git"
+subproc_git_repo: "https://github.com/Colin-Fredericks/hx_util.git"
 subproc_git_revision: "master"
 
 # how long output files take to be deleted
@@ -26,11 +26,6 @@ subproc_grace_period_in_minutes: 60
 subproc_dirs_to_create:
     - "{{ subproc_rootdir }}"
     - "{{ subproc_bin_dir }}"
-
-subproc_python_dependencies:
-    - 'bs4'
-    - 'unicodecsv'
-    - 'lxml'
 
 
 # service vars

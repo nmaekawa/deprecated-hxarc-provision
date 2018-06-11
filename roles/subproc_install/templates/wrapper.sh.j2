@@ -16,7 +16,7 @@ tar xzf ${input_file} -C ${input_dir}
 echo
 echo "***** about to process input file ${input_file}"
 
-# run xml scripts
+# run hx_util script
 cd ${SCRIPT_DIR}
 ${SCRIPT_VENV}/bin/python ${SCRIPT_FILENAME} ${input_dir}/course
 
