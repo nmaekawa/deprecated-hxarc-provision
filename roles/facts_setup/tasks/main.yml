@@ -2,7 +2,7 @@
 
     - name: set webserver_dns for prod
       set_fact:
-          webserver_dns: "{{ service_name }}.{{ org_dns_domain }}"
+          webserver_dns: "live.{{ service_name }}.{{ org_dns_domain }}"
       when:
           - enable_ssl == "true"
           - ec2_tag_cluster == "prod"
