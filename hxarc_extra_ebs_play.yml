@@ -1,0 +1,77 @@
+#
+# playbook to add extra-ebs to hxarc server
+# -----------------------------------------
+#
+# assumes playbook hxarc_play.yml was already applied!
+# it creates a new 16G ebs volume, attaches to the hxarc
+# server, formats it, and mounts it.
+# it then re-configures hxarc service to use the new ebs
+# as the data folder (for work only, db is untouched)
+#
+---
+
+- hosts: "tag_webserver:&tag_project_{{ service_name }}"
+  remote_user: "{{ my_remote_user }}"
+  become: yes
+  vars:
+      ebs_device: "/dev/xvdh"
+      ebs_mountpoint: "/opt/data_ebs"
+  vars_files:
+      - vars/hxarc_vars.yml
+  handlers:
+      - include_tasks: handlers/main.yml
+
+  tasks:
+      - name: create extra ebs volume
+        become_user: "{{ lookup('env', 'USER') }}"
+        delegate_to: localhost
+        ec2_vol:
+            instance: "{{ hostvars[item].ec2_id }}"
+            volume_size: 16
+            volume_type: gp2
+            device_name: "{{ ebs_device }}"
+            state: present
+        with_items: "{{ hostvars }}"
+        register: ec2_vol
+
+      - name: print ebs info
+        debug:
+           msg: "{{ item }}"
+        with_items: "{{ ec2_vol.results }}"
+
+      - name: attach volume
+        become_user: "{{ lookup('env', 'USER') }}"
+        delegate_to: localhost
+        ec2_vol:
+            id: "{{ item.volume_id }}"
+            instance: "{{ item.invocation.module_args.instance }}"
+            device_name: "{{ ebs_device }}"
+        with_items: "{{ ec2_vol.results }}"
+
+      - name: make filesystem out of ebs
+        filesystem:
+            fstype: ext4
+            dev: "{{ ebs_device }}"
+
+      - name: create mountpoint
+        file:
+            path: "{{ ebs_mountpoint }}"
+            state: directory
+
+      - name: mount ebs
+        mount:
+            path: "{{ ebs_mountpoint }}"
+            src: "{{ ebs_device }}"
+            fstype: ext4
+            state: mounted
+
+      - name: reconfig hxarc service
+        include_role:
+            name: webapp_install
+        vars:
+            service_work_dir: "{{ ebs_mountpoint }}/data/work"
+
+
+
+
+

@@ -81,6 +81,8 @@ service_flask_users: []
 service_gunicorn_port: "{{ lookup('env', 'HXARC_GUNICORN_PORT') | default('8123', true) }}"
 service_gunicorn_host: "{{ lookup('env', 'HXARC_GUNICORN_HOST') | default('0.0.0.0', true) }}"
 
+# some large uploads take this long in slow wifi
+gunicorn_timeout_seconds: 1200
 
 # nginx vars
 nginx_access_log_path: "{{ service_log_dir }}/nginx_access.log"
@@ -92,7 +94,7 @@ var_service_local_certs_dir: "{{ service_name | upper }}_LOCAL_CERTS_DIR"
 local_certs_dir: "{{ lookup('env', var_service_local_certs_dir) | default('./vars', true) }}"
 var_service_enable_ssl: "{{ service_name | upper }}_ENABLE_SSL"
 enable_ssl: "{{ lookup('env', var_service_enable_ssl) | default('false', true) }}"
-service_upload_max_size: "500M"
+service_upload_max_size: "1000M"
 
 
 # for nmaekawa.apt

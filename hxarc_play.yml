@@ -50,3 +50,6 @@
             name: nginx
 
 
+- name: playbook to add extra ebs for data
+  import_playbook: hxarc_extra_ebs_play.yml
+
