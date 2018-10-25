@@ -13,14 +13,14 @@
     - name: admin user | create admin user
       become_user: "{{ service_user }}"
       shell: >
-          export {{ service_name | upper}}_DOTENV_PATH={{ service_dotenv_path }} &&
-          export FLASK_APP={{ service_name }}/wsgi.py &&
-          . {{ service_venv_dir }}/bin/activate &&
-          flask create_user
+          (export {{ service_name | upper}}_DOTENV_PATH={{ service_dotenv_path }};
+          export FLASK_APP={{ service_install_dir }}/{{ service_name }}/wsgi.py;
+          . {{ service_venv_dir }}/bin/activate;
+          flask create-user
           --usr '{{ service_admin_user }}'
           --pwd '{{ service_admin_password }}'
           --email '{{ service_admin_email }}'
-          --is_admin
+          --is_admin)
       args:
           chdir: "{{ service_install_dir }}"
       register: create_user
@@ -38,7 +38,7 @@
           export {{ service_name | upper}}_DOTENV_PATH={{ service_dotenv_path }} &&
           export FLASK_APP={{ service_name }}/wsgi.py &&
           . {{ service_venv_dir }}/bin/activate &&
-          flask create_user
+          flask create-user
           --usr '{{ item.username }}'
           --pwd '{{ item.password }}'
           --email '{{ item.email }}'

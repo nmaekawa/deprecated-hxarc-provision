@@ -14,6 +14,9 @@
         name: "hourly work dir cleanup"
         user: "{{ service_user }}"
         special_time: hourly
-        job: "{{ service_bin_dir }}/cleanup_work_dir.sh >> {{ service_log_dir }}/cronjob.log 2&>1 "
+        job: >
+            {{ service_bin_dir }}/cleanup_work_dir.sh >>
+            {{ service_log_dir }}/cronjob.log 2&>1
+            | logger -t "[hxarc cleanup cron]"
         state: present
 

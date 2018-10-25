@@ -1,55 +1,11 @@
 ---
-- hosts: "tag_webserver:&tag_project_{{ service_name }}"
-  remote_user: "{{ my_remote_user }}"
-  become: yes
-  become_user: root
-  gather_facts: False
-  vars_files:
-      - vars/hxarc_vars.yml
 
-  tasks:
-      - name: install python2
-        raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
-        register: result
-        changed_when: "result.stdout != ''"
+- name: playbook to install and config hxarc webserver
+  import_playbook: hxarc_webserver_play.yml
+
+- name: playbook to install cloudwatch monitoring
+  import_playbook: hxarc_cloudwatch_play.yml
+  when: "use_aws"
 
 
-- hosts: "tag_webserver:&tag_project_{{ service_name }}"
-  remote_user: "{{ my_remote_user }}"
-  become: yes
-  become_user: root
-  vars_files:
-      - vars/hxarc_vars.yml
-
-  roles:
-      - external/jmcvetta.passwordless_sudo
-      - { role: external/nmaekawa.apt, apt_other_packages: "{{ apt_required_packages_hxarc }}" }
-      - external/Stouts.users
-      - facts_setup
-
-
-- hosts: "tag_webserver:&tag_project_{{ service_name }}"
-  remote_user: "{{ my_remote_user }}"
-  become: yes
-  vars_files:
-      - vars/hxarc_vars.yml
-  handlers:
-    - include_tasks: handlers/main.yml
-
-  tasks:
-      - name: install subproc
-        include_role:
-            name: subproc_install
-
-      - name: install webapp
-        include_role:
-            name: webapp_install
-
-      - name: config nginx
-        include_role:
-            name: nginx
-
-
-- name: playbook to add extra ebs for data
-  import_playbook: hxarc_extra_ebs_play.yml
 

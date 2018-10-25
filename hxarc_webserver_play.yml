@@ -1,0 +1,57 @@
+---
+- hosts: '{{ target_hosts | default("tag_service_hxarc", true) }}'
+  remote_user: "{{ my_remote_user }}"
+  become: yes
+  become_user: root
+  gather_facts: False
+  vars_files:
+      - vars/hxarc_vars.yml
+
+  tasks:
+      - name: install python2
+        raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+        register: result
+        changed_when: "result.stdout != ''"
+
+
+- hosts: '{{ target_hosts | default("tag_service_hxarc", true) }}'
+  remote_user: "{{ my_remote_user }}"
+  become: yes
+  become_user: root
+  vars_files:
+      - vars/hxarc_vars.yml
+
+  roles:
+      - external/jmcvetta.passwordless_sudo
+      - { role: external/nmaekawa.apt, apt_other_packages: "{{ apt_required_packages_hxarc }}" }
+      - external/Stouts.users
+      - facts_setup
+
+
+- hosts: '{{ target_hosts | default("tag_service_hxarc", true) }}'
+  remote_user: "{{ my_remote_user }}"
+  become: yes
+  vars_files:
+      - vars/hxarc_vars.yml
+  handlers:
+    - include_tasks: handlers/main.yml
+
+  tasks:
+      - name: install subproc
+        include_role:
+            name: subproc_install
+
+      - name: install webapp
+        include_role:
+            name: webapp_install
+
+      - name: config nginx
+        include_role:
+            name: nginx
+
+
+- name: playbook to mount extra ebs
+  import_playbook: hxarc_mount_extra_ebs_play.yml
+  when: "use_aws"
+
+

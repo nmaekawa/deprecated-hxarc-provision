@@ -1,0 +1,56 @@
+#
+# playbook to add extra-ebs to hxarc server
+# -----------------------------------------
+#
+# assumes ec2 instance has a `ebs_device` volume already attached.
+# it will blindly format and mount the device!
+# *** data on the volume will be _erased_ ***
+#
+# it then re-configures hxarc service to use the new ebs
+# as the data folder (for work only, db is untouched)
+#
+---
+
+- hosts: '{{ target_hosts | default("tag_service_hxarc", true) }}'
+  remote_user: "{{ my_remote_user }}"
+  become: yes
+  # these vars must be defined in vars/hxarc_vars.yml
+  #    ebs_device: "/dev/CHANGEME"
+  #    ebs_mountpoint: "/opt/CHANGEME"
+  vars_files:
+      - vars/hxarc_vars.yml
+  handlers:
+      - include_tasks: handlers/main.yml
+
+  tasks:
+      - name: make filesystem out of ebs
+        filesystem:
+            fstype: ext4
+            dev: "{{ ebs_device }}"
+        when: "use_aws"
+
+      - name: create mountpoint
+        file:
+            path: "{{ ebs_mountpoint }}"
+            state: directory
+        when: "use_aws"
+
+      - name: mount ebs
+        mount:
+            path: "{{ ebs_mountpoint }}"
+            src: "{{ ebs_device }}"
+            fstype: ext4
+            state: mounted
+        when: "use_aws"
+
+      - name: reconfig hxarc service
+        include_role:
+            name: webapp_install
+        vars:
+            service_work_dir: "{{ ebs_mountpoint }}/data/work"
+        when: "use_aws"
+
+
+
+
+
