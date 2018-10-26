@@ -50,6 +50,7 @@
   become_user: root
   vars:
       project_name: '{{ hostvars[inventory_hostname].ec2_tag_project | mandatory}}'
+      cluster: '{{ hostvars[inventory_hostname].ec2_tag_cluster | mandatory}}'
       cloudwatch_namespace: '{{ cloudwatch_namespace_prefix }}/{{ project_name }}'
       service_cw_install_dir: '/opt/aws-scripts-mon/'
   vars_files:
@@ -70,4 +71,15 @@
             regexp: "(.*input_ref->{'Namespace'} =).*"
             replace: '\1 "{{ cloudwatch_namespace }}";'
             backup: yes
+
+      # install script for syslog backup
+      - import_tasks: roles/external/nmaekawa.cloudwatch/tasks/install_s3_backup.yml
+        vars:
+            script_install_dir: '/usr/local/bin'
+            cronjob_owner: root
+            s3_backup_bucket_name: 'backups-hx-edu'
+            s3_backup_prefix: '{{ cluster }}/{{ project_name }}'
+            file_backup_prefix: '{{ service_name }}'
+            files_to_backup:
+                - /var/log/syslog.1
 
