@@ -1,0 +1,34 @@
+#
+# playbook to add extra-ebs to hxarc server
+# -----------------------------------------
+#
+# assumes playbook hxarc_play.yml was already applied!
+# it creates a new 16G ebs volume, attaches to the hxarc
+# server, formats it, and mounts it.
+# it then re-configures hxarc service to use the new ebs
+# as the data folder (for work only, db is untouched)
+#
+---
+
+- hosts: "tag_webserver:&tag_project_{{ service_name }}"
+  remote_user: "{{ my_remote_user }}"
+  become: yes
+  vars:
+      ebs_device: "/dev/xvdh"
+      ebs_mountpoint: "/opt/data_ebs"
+  vars_files:
+      - vars/hxarc_vars.yml
+  handlers:
+      - include_tasks: handlers/main.yml
+
+  tasks:
+      - name: reconfig hxarc service
+        include_role:
+            name: webapp_install
+        vars:
+            service_work_dir: "{{ ebs_mountpoint }}/data/work"
+
+
+
+
+

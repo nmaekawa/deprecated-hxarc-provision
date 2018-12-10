@@ -9,10 +9,8 @@
 - hosts: '{{ target_hosts | default("tag_service_hxarc", true) }}'
   remote_user: "{{ my_remote_user }}"
   become: yes
-  # these vars must be defined in vars/hxarc_vars.yml
-  #    ebs_device: "/dev/CHANGEME"
-  #    ebs_mountpoint: "/opt/CHANGEME"
   vars_files:
+      - vars/common_vars.yml
       - vars/hxarc_vars.yml
   handlers:
       - include_tasks: handlers/main.yml

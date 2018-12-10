@@ -13,7 +13,7 @@
   become_user: root
   gather_facts: False
   vars_files:
-      - vars/hxarc_vars.yml
+      - vars/common_vars.yml
 
   tasks:
   - name: install python2
@@ -25,6 +25,7 @@
   become: yes
   become_user: root
   vars_files:
+      - vars/common_vars.yml
       - vars/hxarc_vars.yml
 
   tasks:
@@ -54,6 +55,7 @@
       cloudwatch_namespace: '{{ cloudwatch_namespace_prefix }}/{{ project_name }}'
       service_cw_install_dir: '/opt/aws-scripts-mon/'
   vars_files:
+      - vars/common_vars.yml
       - vars/hxarc_vars.yml
 
   tasks:

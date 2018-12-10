@@ -1,0 +1,55 @@
+---
+
+# assumes either aws or vagrant, then derive remote_user(assumes ubuntu)
+use_aws: "{{ (ec2_tag_cluster == 'vagrant') | ternary(False, True) }}"
+my_remote_user: "{{ use_aws | ternary('ubuntu', 'vagrant') }}"
+
+# BEWARE that devo_domain should not be published to the world!
+# used in testing ONLY
+prod_domain: "{{ lookup('env', 'HX_PROD_DNS') | default('harvardx.harvard.edu', true) }}"
+devo_domain: "{{ lookup('env', 'HX_DEVO_DNS') | default('harvardx.harvard.edu', true) }}"
+org_dns_domain: "{% if ec2_tag_cluster in ['prod', 'demo'] %}\
+                 {{ prod_domain }}\
+            {% else %}\
+                 {{ devo_domain }}\
+            {% endif %}"
+
+# for Stouts.users
+users_developers:
+    - name: nmaekawa
+      groups: ["sudo"]
+      authorized:
+          - https://github.com/nmaekawa.keys
+
+    - name: lduarte
+      groups: ["sudo"]
+      authorized:
+          - https://github.com/lduarte1991.keys
+
+users_ssh_keys: "{{ users_users }}"
+
+
+# certificates mount point
+local_certs_dir: '{{ lookup("env", "LOCAL_CERTS_DIR") | default("/Volumes/magic_numbers/certs/hxarc", true) }}'
+
+
+# webserver dns used for django apps, hx varnish, and nginx configs
+webserver_dns: "{% if ec2_tag_cluster == 'prod' %}\
+        {% if not hx_prod_subdomain %}\
+            {{ cert_dns }}.{{ org_dns_domain }}\
+        {% else %}\
+            {{ hx_prod_subdomain }}.{{ cert_dns }}.{{ org_dns_domain }}\
+        {% endif %}\
+    {% elif ec2_tag_cluster == 'vagrant' %}\
+        {{ vagrant_webserver_dns }}\
+    {% else %}\
+        {{ ec2_tag_cluster }}.{{ cert_dns }}.{{ org_dns_domain }}\
+    {% endif %}"
+
+
+# cloudwatch stuff
+cloudwatch_namespace_prefix: 'HX/CustomMetrics'
+
+# s3 bucket for sync and backups
+s3_backup_bucket_name: 'backups-hx-edu'
+s3_source_bucket_name: 'sources-hx-edu'

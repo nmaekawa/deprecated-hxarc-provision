@@ -5,13 +5,14 @@
   become_user: root
   gather_facts: False
   vars_files:
-      - vars/hxarc_vars.yml
+    - vars/common_vars.yml
+    - vars/hxarc_vars.yml
 
   tasks:
-      - name: install python2
-        raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
-        register: result
-        changed_when: "result.stdout != ''"
+    - name: install python2
+      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+      register: result
+      changed_when: "result.stdout != ''"
 
 
 - hosts: '{{ target_hosts | default("tag_service_hxarc", true) }}'
@@ -19,35 +20,47 @@
   become: yes
   become_user: root
   vars_files:
-      - vars/hxarc_vars.yml
+    - vars/common_vars.yml
+    - vars/hxarc_vars.yml
 
-  roles:
-      - external/jmcvetta.passwordless_sudo
-      - { role: external/nmaekawa.apt, apt_other_packages: "{{ apt_required_packages_hxarc }}" }
-      - external/Stouts.users
-      - facts_setup
+  tasks:
+    - include_role:
+        name: external/jmcvetta.passwordless_sudo
+
+    - include_role:
+        name: external/nmaekawa.apt
+      vars:
+        apt_other_packages: "{{ apt_required_packages_hxarc }}"
+
+    - include_role:
+        name: external/Stouts.users
+      vars:
+        users_users: "{{ users_developers }} + {{ project_users }}"
 
 
 - hosts: '{{ target_hosts | default("tag_service_hxarc", true) }}'
   remote_user: "{{ my_remote_user }}"
   become: yes
   vars_files:
-      - vars/hxarc_vars.yml
+    - vars/common_vars.yml
+    - vars/hxarc_vars.yml
   handlers:
     - include_tasks: handlers/main.yml
 
   tasks:
-      - name: install subproc
-        include_role:
-            name: subproc_install
+    - name: install subproc
+      include_role:
+        name: subproc_install
 
-      - name: install webapp
-        include_role:
-            name: webapp_install
+    - name: install webapp
+      include_role:
+        name: webapp_install
 
-      - name: config nginx
-        include_role:
-            name: nginx
+    - name: config nginx
+      include_role:
+        name: nginx
+      vars:
+        nginx_template_path: roles/nginx/templates/service_config.j2
 
 
 - name: playbook to mount extra ebs

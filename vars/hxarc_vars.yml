@@ -1,10 +1,7 @@
 ---
 
-# assumes either aws or vagrant, then derive remote_user(assumes ubuntu)
-use_aws: "{{ (ec2_tag_cluster == 'vagrant') | ternary(False, True) }}"
-my_remote_user: "{{ use_aws | ternary('ubuntu', 'vagrant') }}"
-
-org_dns_domain: "harvardx.harvard.edu"
+# HXARC VARS
+# ---------------------------------------------------------------------------
 
 # when use_aws == True, and ec2 has extra volume
 # check with cloudformation template that the **device name** is the same!!!
@@ -43,7 +40,13 @@ service_log_dir: "{{ service_rootdir }}/log"
 service_config_dir: "{{ service_rootdir }}/conf"
 service_install_dir: "{{ service_rootdir }}/{{ service_name }}"
 service_data_dir: "{{ service_rootdir }}/data"
-service_work_dir: "{{ service_data_dir }}/work"
+
+service_work_dir: "{% if use_aws %}\
+                {{ ebs_mountpoint }}/data/work\
+                   {% else %}\
+                {{ service_data_dir }}/work\
+                   {% endif %}"
+
 service_db_dir: "{{ service_data_dir }}/db"
 service_bin_dir: "{{ service_rootdir }}/bin"
 service_static_dir: "{{ service_rootdir }}/www"
@@ -89,20 +92,9 @@ service_gunicorn_host: "{{ lookup('env', 'HXARC_GUNICORN_HOST') | default('0.0.0
 # some large uploads take this long in slow wifi
 gunicorn_timeout_seconds: 1200
 
-# nginx vars
-nginx_access_log_path: "{{ service_log_dir }}/nginx_access.log"
-nginx_error_log_path: "{{ service_log_dir }}/nginx_error.log"
-nginx_ssl_dest_dir: "/etc/ssl/certs"
-nginx_static_dir: "{{ service_static_dir }}"
-nginx_media_dir: "{{ nginx_static_dir }}"
-var_service_local_certs_dir: "{{ service_name | upper }}_LOCAL_CERTS_DIR"
-local_certs_dir: "{{ lookup('env', var_service_local_certs_dir) | default('/Volumes/magic_numbers/certs/hxarc', true) }}"
-var_service_enable_ssl: "{{ service_name | upper }}_ENABLE_SSL"
-enable_ssl: "{{ lookup('env', var_service_enable_ssl) | default('false', true) }}"
-service_upload_max_size: "1000M"
-
 
 # for nmaekawa.apt
+# ---------------------------------------------------------------------------
 apt_required_packages_hxarc:
     - 'python-pip'
     - 'python-dev'
@@ -113,28 +105,40 @@ apt_required_packages_hxarc:
 
 
 # for Stouts.users
+# ---------------------------------------------------------------------------
 users_enabled: yes
 
-users_users:
+project_users:
     - name: '{{ service_user }}'
       authorized: []
-
     - name: '{{ subproc_user }}'
       authorized: []
-
-
-
-users_ssh_keys: '{{ users_users }}'
-
-users_to_install:
-    - '{{ service_user }}'
-    - '{{ subproc_user }}'
-
 
 # cloudwatch stuff
 cloudwatch_namespace_prefix: 'HX/CustomMetrics'
 script_install_dir: '/usr/local/bin'
 cronjob_owner: '{{ service_user }}'
 
+
+
+# PROXY VARS
+# ---------------------------------------------------------------------------
+enable_ssl: '{{ use_aws }}'
+
+nginx_access_log_path: "{{ service_log_dir }}/nginx_access.log"
+nginx_error_log_path: "{{ service_log_dir }}/nginx_error.log"
+nginx_static_dir: "{{ service_static_dir }}"
+nginx_media_dir: "{{ nginx_static_dir }}"
+nginx_ssl_dest_dir: "/etc/ssl/certs"
+cert_dns: 'hxarc'  # this name must match pattern for ssl cert names
+
+service_upload_max_size: "1000M"
+
+# special case for vagrant
+vagrant_webserver_dns: "{{ inventory_hostname }}"
+
+# for local services, in prod, we use the wildcard cert with this subdomain
+# e.g. live.hxarc.harvardx.harvard.edu
+hx_prod_subdomain: "live"
 
 
