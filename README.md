@@ -1,3 +1,11 @@
+
+DEPRECATED as of 11mar19
+========================
+
+playbooks to install and config hxarc can be found in
+https://github.com/nmaekawa/hximg-provision
+
+
 hxarc-provision
 ===============
 

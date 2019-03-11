@@ -1,0 +1,10 @@
+
+11mar19
+
+this repo is deprecated for provisioning of hxarc instances!
+
+please check https://github.com/nmaekawa/hximg-provision
+and playbook hxarc_play.yml for configuring a new instance of hxarc.
+
+---eop
+
